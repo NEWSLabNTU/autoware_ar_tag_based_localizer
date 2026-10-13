@@ -52,6 +52,7 @@
 #include <opencv4/opencv2/core/quaternion.hpp>
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -98,6 +99,15 @@ ArTagBasedLocalizer::ArTagBasedLocalizer(const rclcpp::NodeOptions & options)
     RCLCPP_ERROR_STREAM(this->get_logger(), "Invalid detection_mode: " << detection_mode);
     return;
   }
+  // A predefined aruco dictionary name (ALL_DICTS, ARUCO_MIP_36h12, TAG36h11, ...) or the path
+  // of a dictionary file in aruco's text format, for markers printed from a dictionary the
+  // library does not ship, such as OpenCV's DICT_5X5_1000.
+  const std::string dictionary = this->declare_parameter<std::string>("dictionary");
+  try {
+    detector_.setDictionary(dictionary);
+  } catch (const std::exception & e) {
+    throw std::invalid_argument("Invalid dictionary '" + dictionary + "': " + e.what());
+  }
   ekf_pose_buffer_ = std::make_unique<autoware::localization_util::SmartPoseBuffer>(
     this->get_logger(), ekf_time_tolerance_, ekf_position_tolerance_);
 
@@ -106,6 +116,7 @@ ArTagBasedLocalizer::ArTagBasedLocalizer(const rclcpp::NodeOptions & options)
   */
   RCLCPP_INFO_STREAM(this->get_logger(), "min_marker_size: " << min_marker_size);
   RCLCPP_INFO_STREAM(this->get_logger(), "detection_mode: " << detection_mode);
+  RCLCPP_INFO_STREAM(this->get_logger(), "dictionary: " << dictionary);
   RCLCPP_INFO_STREAM(this->get_logger(), "thresMethod: " << detector_.getParameters().thresMethod);
   RCLCPP_INFO_STREAM(this->get_logger(), "marker_size_: " << marker_size_);
 

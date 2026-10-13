@@ -45,6 +45,11 @@
           "description": "min_marker_size",
           "default": 0.02
         },
+        "dictionary": {
+          "type": "string",
+          "description": "a predefined aruco dictionary name (ALL_DICTS, ARUCO_MIP_36h12, TAG36h11, ...) or the path of a dictionary file in aruco's text format",
+          "default": "ALL_DICTS"
+        },
         "ekf_time_tolerance": {
           "type": "number",
           "description": "ekf_time_tolerance(sec)",
@@ -64,6 +69,7 @@
         "consider_orientation",
         "detection_mode",
         "min_marker_size",
+        "dictionary",
         "ekf_time_tolerance",
         "ekf_position_tolerance"
       ],
